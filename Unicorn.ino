@@ -10,16 +10,14 @@ const int LED_GREEN_PIN = 10;
 const int LED_BLUE_PIN = 9; 
 const int LED_POWER = 11; 
 
-const int RC_WAIT = 0;
-const int RC_ATTACK = 1;
+const int RC_GO = 1;
 const int RC_RETREAT = 2;
 const int RC_PATROL = 3;
-const int SAFE_DISTANCE = 12;
-const int ATTACK_DISTANCE = 36;
-const int PATROL_DISTANCE = 100;
+const int SAFE_DISTANCE = 18; // Inches
+const int ATTACK_DISTANCE = 40;
 const int MAX_SAMPLES = 10;
 
-int mode = RC_WAIT;
+int mode = RC_GO;
 int currentSample = 0;
 unsigned int samples[MAX_SAMPLES];
 int red = 255;
@@ -79,40 +77,30 @@ int minDistance() {
 void loop() {
   sampleDistance();
   int inches = minDistance();
-  mode = RC_PATROL;
-  if (inches < PATROL_DISTANCE) {
-    mode = RC_ATTACK;
-  }
+  mode = RC_GO;
   if (inches < ATTACK_DISTANCE) {
-    mode = RC_WAIT;
+    mode = RC_PATROL;
   }
   if (inches < SAFE_DISTANCE) {
     mode = RC_RETREAT;
   }
   switch(mode) {
-    case RC_WAIT:
-      color(255, 255, 0);
-      digitalWrite(BACKWARD_PIN, LOW);
-      digitalWrite(FORWARDS_PIN, LOW);
-      digitalWrite(TURN_RIGHT_PIN, LOW);
-      digitalWrite(TURN_LEFT_PIN, LOW);
-      break;
     case RC_PATROL:
-      color(255, 0, 255); // Purple
+      color(255, 255, 0); // Yellow
       digitalWrite(BACKWARD_PIN, LOW);
-      digitalWrite(FORWARDS_PIN, LOW);
+      digitalWrite(FORWARDS_PIN, HIGH);
       digitalWrite(TURN_RIGHT_PIN, LOW);
-      digitalWrite(TURN_LEFT_PIN, LOW);
+      digitalWrite(TURN_LEFT_PIN, HIGH);
       break;
-    case RC_ATTACK:
-      color(255, 0, 0); // Red
+    case RC_GO:
+      color(0, 255, 0); 
       digitalWrite(BACKWARD_PIN, LOW);
       digitalWrite(FORWARDS_PIN, HIGH);
       digitalWrite(TURN_RIGHT_PIN, LOW);
       digitalWrite(TURN_LEFT_PIN, LOW);
       break;
     case RC_RETREAT:
-      color(0, 0, 255); // Blue
+      color(255, 0, 0); 
       digitalWrite(BACKWARD_PIN, HIGH);
       digitalWrite(FORWARDS_PIN, LOW);
       digitalWrite(TURN_RIGHT_PIN, HIGH);
